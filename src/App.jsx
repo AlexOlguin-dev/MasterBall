@@ -50,7 +50,7 @@ function App() {
   return (
     <>
       {/* AppBar con botón para abrir el Drawer */}
-      <AppBar position="fixed" sx={{ backgroundColor: '#000' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#000', paddingTop: "30px" }}>
         <Toolbar>
           <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)} sx={{ mr: 2 }}>
             <MenuIcon />

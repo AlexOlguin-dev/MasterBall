@@ -106,9 +106,20 @@ const Pokedex = () => {
   const isLight = isLightColor(selectedColor);
 
   return (
-    <Box style={{ padding: "10px 10px 40px 10px", marginTop: "-10px" }} bgcolor="#383838" minHeight="100vh">
+    <Box style={{ padding: "10px 10px 40px 10px", marginTop: "-80px" }} bgcolor="#383838" minHeight="100vh">
       
-      <Box mb={2}>
+      <Box
+        mb={2}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: '#383838',
+          paddingBottom: 2,
+          padding: "100px 10px 10px 0px",
+          marginRight: "-10px"
+        }}
+      >
         <Select
           value={selectedType}
           onChange={handleChange}
@@ -196,7 +207,7 @@ const Pokedex = () => {
             bgcolor={backgroundColor}
             mb={1}
             borderRadius={1}
-            style={{ padding: "9px" }}
+            style={{ padding: "12px" }}
           >
             <Box display="flex" flexDirection="column" flexGrow={1}>
               <Box display="flex" alignItems="center" mb={0.5}>
@@ -212,7 +223,7 @@ const Pokedex = () => {
                   const textColor = isLightColor(bg) ? '#000' : '#fff';
 
                   return (
-                    <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg}>
+                    <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
                       <Typography fontSize={12} fontWeight="bold" color={textColor}>
                         {tipo}
                       </Typography>
@@ -224,23 +235,17 @@ const Pokedex = () => {
 
             <Box
               sx={{
-                width: 70,
-                height: 70,
+                width: 80,
+                height: 80,
                 borderRadius: '50%',
                 backgroundColor: midBgColors[typeKey] || '#ccc',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                overflow: 'hidden',
                 margin: "-10px 0px"
               }}
             >
-              <Avatar
-                src={`/assets/img/icons/${pokemon.numero_pokedex}.png`}
-                alt={pokemon.nombre}
-                sx={{ width: 60, height: 60 }}
-                loading="lazy"
-              />
+              <img src={`/assets/img/icons/${pokemon.numero_pokedex}.png`} alt={pokemon.nombre} sx={{ width: 80, height: 80 }} />
             </Box>
           </Box>
         );
