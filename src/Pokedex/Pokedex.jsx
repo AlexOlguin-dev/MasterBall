@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Typography, Avatar, Select, MenuItem, TextField } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Typography, Button, Select, MenuItem, TextField } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import PokemonList from '../assets/json/PokemonList.json';
 
 const typeColors = {
@@ -78,6 +80,9 @@ const isLightColor = (color) => {
 };
 
 const Pokedex = () => {
+
+  const topRef = useRef(null);
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState('Any type');
   const [searchName, setSearchName] = useState('');
 
@@ -101,13 +106,22 @@ const Pokedex = () => {
     return hasType && matchesName && !excludedWords.some((word) => lowerName.includes(word));
   });
 
-  const selectedColor =
-    selectedType !== 'Any type' ? typeColors[selectedType.toLowerCase()] : '#ccc';
+  const selectedColor = selectedType !== 'Any type' ? typeColors[selectedType.toLowerCase()] : '#ccc';
   const isLight = isLightColor(selectedColor);
 
+  const scrollToTop = () => {
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <Box style={{ padding: "10px 10px 40px 10px", marginTop: "-80px" }} bgcolor="#383838" minHeight="100vh">
+    <Box style={{ position: 'relative', padding: "10px 10px 40px 10px", marginTop: "-80px", overflowX: 'hidden' }} bgcolor="#383838" minHeight="100vh">
+
+      {/* Marcador del inicio */}
+      <div ref={topRef}></div>
       
+      {/** ======================================== SELECTION OF POKEMON ====================================== */}
       <Box
         mb={2}
         sx={{
@@ -116,7 +130,7 @@ const Pokedex = () => {
           zIndex: 10,
           backgroundColor: '#383838',
           paddingBottom: 2,
-          padding: "100px 10px 10px 0px",
+          padding: "110px 10px 0px 0px",
           marginRight: "-10px"
         }}
       >
@@ -193,7 +207,9 @@ const Pokedex = () => {
         />
 
       </Box>
+      {/** ======================================== SELECTION OF POKEMON ====================================== */}
 
+      {/** ======================================== LIST OF POKEMON ====================================== */}
       {filteredList.map((pokemon, index) => {
         const typeKey = pokemon.tipos[0].toLowerCase();
         const backgroundColor = bgColors[typeKey] || '#ccc';
@@ -207,7 +223,8 @@ const Pokedex = () => {
             bgcolor={backgroundColor}
             mb={1}
             borderRadius={1}
-            style={{ padding: "12px" }}
+            style={{ padding: "12px", cursor: 'pointer' }}
+            onClick={() => navigate(`/pokedex_detail/${pokemon.numero_pokedex}`)}
           >
             <Box display="flex" flexDirection="column" flexGrow={1}>
               <Box display="flex" alignItems="center" mb={0.5}>
@@ -250,6 +267,27 @@ const Pokedex = () => {
           </Box>
         );
       })}
+      {/** ======================================== LIST OF POKEMON ====================================== */}
+
+      {/* Botón fijo en la esquina inferior derecha */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={scrollToTop}
+        sx={{
+          position: 'fixed',
+          bottom: 50,
+          right: 16,
+          zIndex: 1000,
+          borderRadius: '50%',
+          minWidth: 'auto',
+          padding: 1.5,
+          backgroundColor: '#000'
+        }}
+      >
+        <KeyboardArrowUpIcon />
+      </Button>
+
     </Box>
   );
 };

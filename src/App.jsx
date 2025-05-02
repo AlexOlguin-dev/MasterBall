@@ -12,7 +12,10 @@ import {
   Divider
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
 import Pokedex from './Pokedex/Pokedex';
+import PokedexDetail from './Pokedex/PokedexDetail';
 import MasterBall from './assets/img/main_icon.png';
 
 function App() {
@@ -40,16 +43,16 @@ function App() {
       </Box>
       <Divider />
       <List>
-        <ListItem button>
+        <ListItem button component={Link} to="/">
           <ListItemText primary="Pokedex" />
         </ListItem>
+        {/* Agrega aquí más rutas si las necesitas */}
       </List>
     </Box>
   );
 
   return (
-    <>
-      {/* AppBar con botón para abrir el Drawer */}
+    <Router>
       <AppBar position="fixed" sx={{ backgroundColor: '#000', paddingTop: "30px" }}>
         <Toolbar>
           <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)} sx={{ mr: 2 }}>
@@ -62,16 +65,17 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      {/* Drawer lateral desplegable */}
       <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
         {drawerContent}
       </Drawer>
 
-      {/* Contenido principal con margen superior */}
       <Box sx={{ marginTop: '64px' }}>
-        <Pokedex />
+        <Routes>
+          <Route path="/" element={<Pokedex />} />
+          <Route path="/pokedex_detail/:id" element={<PokedexDetail />} />
+        </Routes>
       </Box>
-    </>
+    </Router>
   );
 }
 
