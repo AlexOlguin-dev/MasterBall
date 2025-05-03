@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, IconButton } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { ArrowBackIos, ArrowForwardIos, ArrowBackIosNew, Info, SportsMma, SwapHoriz } from '@mui/icons-material';
+import { GiCrossedSwords } from 'react-icons/gi';
 import StatsPanel from './StatsPanel';
 import PokemonList from '../assets/json/PokemonList.json';
 import PokemonDetail from '../assets/json/Detalles_DB.json';
@@ -70,10 +71,13 @@ const typeColors = {
 };
 
 const PokedexDetail = () => {
+
+  const navigate = useNavigate();
   const { id } = useParams();
   const gen_data = PokemonList.find(p => String(p.numero_pokedex) === String(id));
   const pokemon = PokemonDetail.find(p => String(p.numero_pokedex) === String(id));
   const [index, setIndex] = useState(0);
+  const [activeView, setActiveView] = useState('info');
 
   const isLightColor = (color) => {
     if (!color) return true;
@@ -97,140 +101,190 @@ const PokedexDetail = () => {
 
   return (
     <Box style={{ padding: "10px 10px 40px 10px", marginTop: "-80px", overflowX: 'hidden' }} bgcolor="#383838" minHeight="100vh">
+
+      {/* Barra de navegación de vistas */}
+      <Box display="flex" justifyContent="center" gap={8} style={{ marginTop: "100px", paddingBottom: "10px" }}>
+        <IconButton onClick={() => navigate('/')}>
+          <ArrowBackIosNew style={{ color: "#fff" }} />
+        </IconButton>
+        <IconButton onClick={() => setActiveView('info')} color="primary">
+          <Info style={{ color: "#fff" }} />
+        </IconButton>
+        <IconButton onClick={() => setActiveView('battle')} color="primary">
+          <GiCrossedSwords style={{ color: "#fff" }} />
+        </IconButton>
+        <IconButton onClick={() => setActiveView('swap')} color="primary">
+          <SwapHoriz style={{ color: "#fff" }} />
+        </IconButton>
+      </Box>
   
-      {/** ========================================= Datos Base ======================================================== */}
-      <Box style={{ marginTop: "100px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px" }}>
-        {/* Contenedor imagen + info */}
-        <Box display="flex" alignItems="center" gap={2}>
-          {/* Imagen */}
-          <Box
-            style={{
-              width: 100,
-              height: 100,
-              backgroundColor: midBgColors[gen_data.tipos[0].toLowerCase()],
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <img
-              src={`/assets/img/official_art/${gen_data.numero_pokedex}.png`}
-              alt={pokemon.nombre}
-              style={{ width: 120, height: 120 }}
-            />
+      {activeView === 'info' && (
+        <>
+          {/** ========================================= Datos Base ======================================================== */}
+          <Box style={{ backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px" }}>
+            {/* Contenedor imagen + info */}
+            <Box display="flex" alignItems="center" gap={2}>
+              {/* Imagen */}
+              <Box
+                style={{
+                  width: 100,
+                  height: 100,
+                  backgroundColor: midBgColors[gen_data.tipos[0].toLowerCase()],
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <img
+                  src={`/assets/img/official_art/${gen_data.numero_pokedex}.png`}
+                  alt={pokemon.nombre}
+                  style={{ width: 120, height: 120 }}
+                />
+              </Box>
+
+              {/* Info al lado derecho de la imagen */}
+              <Box>
+                {/* Número */}
+                <Typography style={{ fontSize: 30 }}>
+                  #{String(gen_data.numero_pokedex).padStart(3, '0')}
+                </Typography>
+
+                {/* Nombre */}
+                <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
+                  {gen_data.nombre}
+                </Typography>
+
+                {/* Tipos */}
+                <Box display="flex" gap={0.5} mt={1}>
+                  {gen_data.tipos.map((tipo, i) => {
+                    const key = tipo.toLowerCase();
+                    const bg = typeColors[key] || '#aaa';
+                    const textColor = isLightColor(bg) ? '#000' : '#fff';
+
+                    return (
+                      <Box
+                        key={i}
+                        px={1}
+                        py={0.5}
+                        borderRadius={1}
+                        bgcolor={bg}
+                        style={{ width: "50px", textAlign: "center" }}
+                      >
+                        <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                          {tipo}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Box>
+            </Box>
           </Box>
+          {/** ========================================= Datos Base ======================================================== */}
 
-          {/* Info al lado derecho de la imagen */}
-          <Box>
-            {/* Número */}
-            <Typography style={{ fontSize: 30 }}>
-              #{String(gen_data.numero_pokedex).padStart(3, '0')}
-            </Typography>
-
-            {/* Nombre */}
+          {/** ========================================= Pokedex ======================================================== */}
+          <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", textAlign: "center" }}>
             <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
-              {gen_data.nombre}
+              Pokedex Descriptions
             </Typography>
+              <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
+                <IconButton onClick={handlePrev}>
+                  <ArrowBackIos />
+                </IconButton>
 
-            {/* Tipos */}
-            <Box display="flex" gap={0.5} mt={1}>
-              {gen_data.tipos.map((tipo, i) => {
-                const key = tipo.toLowerCase();
-                const bg = typeColors[key] || '#aaa';
-                const textColor = isLightColor(bg) ? '#000' : '#fff';
-
-                return (
+                <Box
+                  width="80%"
+                  minHeight={80}
+                  display="flex"
+                  flexDirection="column"  // Asegura que los elementos estén uno sobre el otro
+                  alignItems="center"
+                  justifyContent="flex-start"  // Esto alinea el contenido hacia la parte superior del contenedor
+                  px={2}
+                  py={1}
+                  bgcolor="#f5f5f5"  // Color de fondo gris claro
+                  borderRadius={2}
+                  style={{ minHeight: "200px" }}
+                >
                   <Box
-                    key={i}
-                    px={1}
-                    py={0.5}
-                    borderRadius={1}
-                    bgcolor={bg}
-                    style={{ width: "50px", textAlign: "center" }}
+                    width="90%"  // Asegura que el Box interno ocupe todo el ancho disponible
+                    bgcolor="#e0e0e0"  // Gris más claro para el fondo
+                    borderRadius={2}
+                    p={2}  // Agrega algo de padding
+                    display="flex"
+                    flexDirection="column"  // Alinea los elementos en columna
+                    alignItems="center"
+                    marginBottom="10px"
                   >
-                    <Typography fontSize={12} fontWeight="bold" color={textColor}>
-                      {tipo}
+                    <Typography variant="h6" fontWeight="bold">
+                      {pokemon.pokedex_entry_origin_en[index]}
                     </Typography>
                   </Box>
-                );
-              })}
-            </Box>
+
+                  <Typography fontSize={13} fontStyle="italic" textAlign="center">
+                    {pokemon.descripciones_en[index]}
+                  </Typography>
+
+                </Box>
+
+
+                <IconButton onClick={handleNext}>
+                  <ArrowForwardIos />
+                </IconButton>
+              </Box>
           </Box>
-        </Box>
-      </Box>
-      {/** ========================================= Datos Base ======================================================== */}
+          {/** ========================================= Pokedex ======================================================== */}
 
-      {/** ========================================= Pokedex ======================================================== */}
-      <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", textAlign: "center" }}>
-        <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
-          Pokedex Descriptions
-        </Typography>
-          <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
-            <IconButton onClick={handlePrev}>
-              <ArrowBackIos />
-            </IconButton>
+          {/** ========================================= Habilities ======================================================== */}
+          <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || "#ccc", padding: "10px", borderRadius: "10px", textAlign: "center" }}>
+            <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
+              Habilities
+            </Typography>
+            {pokemon.habilidades.map((hab, index) => {
+              const isOculta = hab.tipo.toLowerCase() === "oculta";
+              const style = {
+                border: `2px solid ${typeColor}`,
+                borderRadius: "30px",
+                padding: "8px",
+                margin: "5px auto",
+                width: "90%",
+                backgroundColor: isOculta ? typeColor : "transparent",
+                color: isOculta ? "#fff" : "#000",
+              };
 
-            <Box
-              width="80%"
-              minHeight={80}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              px={2}
-              py={1}
-              bgcolor="#f5f5f5"
-              borderRadius={2}
-              style={{ minHeight: "200px" }}
-            >
-              <Typography fontSize={12} fontStyle="italic" textAlign="center">
-                {pokemon.descripciones_en[index]}
-              </Typography>
-            </Box>
-
-            <IconButton onClick={handleNext}>
-              <ArrowForwardIos />
-            </IconButton>
+              return (
+                <Box key={index} style={style}>
+                  <Typography style={{ color: isLightColor(typeColor) }}>
+                    {hab.nombre_en}
+                  </Typography>
+                </Box>
+              );
+            })}
           </Box>
-      </Box>
-      {/** ========================================= Pokedex ======================================================== */}
+          {/** ========================================= Habilities ======================================================== */}
 
-      {/** ========================================= Habilities ======================================================== */}
-      <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || "#ccc", padding: "10px", borderRadius: "10px", textAlign: "center" }}>
-        <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
-          Habilities
-        </Typography>
-        {pokemon.habilidades.map((hab, index) => {
-          const isOculta = hab.tipo.toLowerCase() === "oculta";
-          const style = {
-            border: `2px solid ${typeColor}`,
-            borderRadius: "30px",
-            padding: "8px",
-            margin: "5px auto",
-            width: "90%",
-            backgroundColor: isOculta ? typeColor : "transparent",
-            color: isOculta ? "#fff" : "#000",
-          };
+          {/** ========================================= Stats ======================================================== */}
+          <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", textAlign: "center" }}>
+            <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
+              Stats
+            </Typography>
+            <StatsPanel estadisticas={pokemon.estadisticas_base} />
+          </Box>
+          {/** ========================================= Stats ======================================================== */}
+        </>
+      )}
 
-          return (
-            <Box key={index} style={style}>
-              <Typography>
-                {hab.nombre_en}
-              </Typography>
-            </Box>
-          );
-        })}
-      </Box>
-      {/** ========================================= Habilities ======================================================== */}
+      {activeView === 'battle' && (
+        <>
+        Moves
+        </>
+      )}
 
-      {/** ========================================= Stats ======================================================== */}
-      <Box style={{ marginTop: "10px", backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", textAlign: "center" }}>
-        <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
-          Stats
-        </Typography>
-        <StatsPanel estadisticas={pokemon.estadisticas_base} />
-      </Box>
-      {/** ========================================= Stats ======================================================== */}
+      {activeView === 'swap' && (
+        <>
+        Evolutions
+        </>
+      )}
 
     </Box>
   );

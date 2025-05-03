@@ -18,55 +18,76 @@ import Pokedex from './Pokedex/Pokedex';
 import PokedexDetail from './Pokedex/PokedexDetail';
 import MasterBall from './assets/img/main_icon.png';
 
+// DrawerContent como componente separado y memoizado
+const DrawerContent = React.memo(({ onClose }) => (
+  <Box
+    sx={{ width: 240 }}
+    role="presentation"
+    onClick={onClose}
+    onKeyDown={(event) => {
+      if (event.key !== 'Tab' && event.key !== 'Shift') {
+        onClose();
+      }
+    }}
+  >
+    <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+      <Box
+        component="img"
+        src={MasterBall}
+        alt="Master Ball"
+        sx={{ width: 32, height: 32, marginRight: 1 }}
+      />
+      <Typography variant="h5" fontWeight="bold">
+        MasterLab
+      </Typography>
+    </Box>
+    <Divider />
+    <List>
+      <ListItem button component={Link} to="/">
+        <ListItemText primary="Pokedex" />
+      </ListItem>
+      {/* Agrega aquí más rutas si las necesitas */}
+    </List>
+  </Box>
+));
+
 function App() {
   const [open, setOpen] = useState(false);
 
-  const toggleDrawer = (open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-    setOpen(open);
-  };
-
-  const drawerContent = (
-    <Box sx={{ width: 240 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
-      <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
-        <Box
-          component="img"
-          src={MasterBall}
-          alt="Master Ball"
-          sx={{ width: 40, height: 40, marginRight: 1 }}
-        />
-        <Typography variant="h5" fontWeight="bold">
-          MasterLab
-        </Typography>
-      </Box>
-      <Divider />
-      <List>
-        <ListItem button component={Link} to="/">
-          <ListItemText primary="Pokedex" />
-        </ListItem>
-        {/* Agrega aquí más rutas si las necesitas */}
-      </List>
-    </Box>
-  );
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
 
   return (
     <Router>
-      <AppBar position="fixed" sx={{ backgroundColor: '#000', paddingTop: "30px" }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#000', paddingTop: '30px' }}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)} sx={{ mr: 2 }}>
+          <IconButton color="inherit" edge="start" onClick={handleDrawerOpen} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Box component="img" src={MasterBall} alt="Master Ball" sx={{ width: 40, height: 40, marginRight: 2 }}/>
+          <Box
+            component="img"
+            src={MasterBall}
+            alt="Master Ball"
+            sx={{ width: 32, height: 32, marginRight: 2 }}
+          />
           <Typography variant="h6" color="inherit" noWrap>
             MasterLab
           </Typography>
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
-        {drawerContent}
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={handleDrawerClose}
+        ModalProps={{
+          keepMounted: true, // mejora el rendimiento en móviles
+        }}
+        SlideProps={{
+          timeout: { enter: 150, exit: 100 }, // animación más rápida
+        }}
+      >
+        <DrawerContent onClose={handleDrawerClose} />
       </Drawer>
 
       <Box sx={{ marginTop: '64px' }}>

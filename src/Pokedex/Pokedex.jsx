@@ -83,7 +83,9 @@ const Pokedex = () => {
 
   const topRef = useRef(null);
   const navigate = useNavigate();
-  const [selectedType, setSelectedType] = useState('Any type');
+  const [selectedType, setSelectedType] = useState(() => {
+    return localStorage.getItem('selectedType') || 'Any type';
+  });
   const [searchName, setSearchName] = useState('');
 
   const allTypes = Array.from(
@@ -93,7 +95,9 @@ const Pokedex = () => {
   ).sort();
 
   const handleChange = (event) => {
-    setSelectedType(event.target.value);
+    const value = event.target.value;
+    setSelectedType(value);
+    localStorage.setItem('selectedType', value);
   };
 
   const filteredList = PokemonList.filter((pokemon) => {
