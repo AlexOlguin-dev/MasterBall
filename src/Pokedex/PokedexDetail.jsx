@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, IconButton, Tabs, Tab, Grid, Divider } from '@mui/material';
+import '../assets/css/maincss.css';
 import { ArrowBackIos, ArrowForwardIos, ArrowBackIosNew, Info, SwapHoriz } from '@mui/icons-material';
 import { GiCrossedSwords } from 'react-icons/gi';
 import StatsPanel from './StatsPanel';
@@ -91,6 +92,10 @@ const PokedexDetail = () => {
   const [pokemonMovesTabIndex, setPokemonMovesTabIndex] = useState(0);
   const pokemonMovesCategories = ['level_up', 'machine', 'egg', 'tutor'];
 
+  useEffect(() => {
+    window.scrollTo(0,0)
+  },[])
+
   const isLightColor = (color) => {
     if (!color) return true;
     const hex = color.replace('#', '');
@@ -148,15 +153,15 @@ const PokedexDetail = () => {
               <Typography variant="subtitle2" style={{ fontSize: 10 }}>Name</Typography>
               <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.name.replace(/-/g, " ")}</Typography>
             </Grid>
-            <Grid item>
+            <Grid item style={{ with: type !== 'level_up' && "30px" }}>
               <Typography variant="subtitle2" style={{ fontSize: 10 }}>Acc</Typography>
               <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.accuracy ? move_data.accuracy : '-' }</Typography>
             </Grid>
-            <Grid item>
+            <Grid item style={{ with: type !== 'level_up' && "30px" }}>
               <Typography variant="subtitle2" style={{ fontSize: 10 }}>PP</Typography>
               <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.pp}</Typography>
             </Grid>
-            <Grid item>
+            <Grid item style={{ with: type !== 'level_up' && "30px" }}>
               <Typography variant="subtitle2" style={{ fontSize: 10 }}>Power</Typography>
               <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.power ? move_data.power : '-'}</Typography>
             </Grid>
@@ -591,15 +596,6 @@ const PokedexDetail = () => {
           </Typography>
         </Box>
       )}
-
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
 
     </Box>
   );

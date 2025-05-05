@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Select, MenuItem, TextField } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -79,7 +79,7 @@ const isLightColor = (color) => {
   return brightness > 140;
 };
 
-const Pokedex = () => {
+const Pokedex = ({ onLoadFinish }) => {
 
   const topRef = useRef(null);
   const navigate = useNavigate();
@@ -87,6 +87,13 @@ const Pokedex = () => {
     return localStorage.getItem('selectedType') || 'Any type';
   });
   const [searchName, setSearchName] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onLoadFinish?.(); // finalizar carga cuando esté listo
+    }, 10); // simula tiempo de carga
+    return () => clearTimeout(timer);
+  }, [onLoadFinish]);
 
   const allTypes = Array.from(
     new Set(
