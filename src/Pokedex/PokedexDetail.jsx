@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, IconButton } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos, ArrowBackIosNew, Info, SportsMma, SwapHoriz } from '@mui/icons-material';
+import { Box, Typography, IconButton, Tabs, Tab, Grid, Divider } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos, ArrowBackIosNew, Info, SwapHoriz } from '@mui/icons-material';
 import { GiCrossedSwords } from 'react-icons/gi';
 import StatsPanel from './StatsPanel';
+import Phisical from '../assets/img/moves/phisical.png';
+import Special from '../assets/img/moves/special.png';
+import Status from '../assets/img/moves/status.png';
+import MasterBall from '../assets/img/main_icon.png';
 import PokemonList from '../assets/json/PokemonList.json';
 import PokemonDetail from '../assets/json/Detalles_DB.json';
+import PokemonMoves from '../assets/json/PokemonMoves_DB.json';
+import MovesData from '../assets/json/Movimientos_DB.json';
 
 const bgColors = {
   grass: '#81c784',
@@ -74,10 +80,16 @@ const PokedexDetail = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [loadingView, setLoadingView] = useState(false);
+  const [loadingTab, setLoadingTab] = useState(false);
   const gen_data = PokemonList.find(p => String(p.numero_pokedex) === String(id));
   const pokemon = PokemonDetail.find(p => String(p.numero_pokedex) === String(id));
+  const pokemon_moves = PokemonMoves[id];
   const [index, setIndex] = useState(0);
   const [activeView, setActiveView] = useState('info');
+  const [pokemonMovesTabIndex, setPokemonMovesTabIndex] = useState(0);
+  const pokemonMovesCategories = ['level_up', 'machine', 'egg', 'tutor'];
 
   const isLightColor = (color) => {
     if (!color) return true;
@@ -99,23 +111,192 @@ const PokedexDetail = () => {
 
   const typeColor = typeColors[gen_data.tipos[0].toLowerCase()] || "#ccc";
 
+  if (!pokemon_moves || !pokemon_moves.moves) {
+    return null;
+  }
+
+  const removeDuplicates = (moves) => {
+    const map = new Map();
+    moves.forEach((move) => {
+      if (!map.has(move.id)) {
+        map.set(move.id, move);
+      }
+    });
+    return Array.from(map.values());
+  };
+
+  const cleanedMoves = {
+    level_up: removeDuplicates(pokemon_moves.moves.level_up).sort((a, b) => a.level - b.level),
+    machine: removeDuplicates(pokemon_moves.moves.machine),
+    egg: removeDuplicates(pokemon_moves.moves.egg),
+    tutor: removeDuplicates(pokemon_moves.moves.tutor),
+  };
+
+  const renderTable = (moves, type) => {
+    return moves.map((move) => {
+      const move_data = MovesData[move.id]
+      return (
+        <Box style={{ backgroundColor: bgColors[move_data.type], margin: "5px", borderRadius: "10px", padding: "10px", color: isLightColor(bgColors[move_data.type]) }}>
+          <Grid container spacing={2} alignItems="center">
+            {type === 'level_up' && (
+              <Grid item>
+                <Typography variant="subtitle2" style={{ fontSize: 10 }}>Level</Typography>
+                <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move.level}</Typography>
+              </Grid>
+            )}
+            <Grid item style={{ width: type === 'level_up' ? "100px" : "145px" }}>
+              <Typography variant="subtitle2" style={{ fontSize: 10 }}>Name</Typography>
+              <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.name.replace(/-/g, " ")}</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" style={{ fontSize: 10 }}>Acc</Typography>
+              <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.accuracy ? move_data.accuracy : '-' }</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" style={{ fontSize: 10 }}>PP</Typography>
+              <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.pp}</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="subtitle2" style={{ fontSize: 10 }}>Power</Typography>
+              <Typography style={{ fontSize: 13, fontWeight: "bold" }}>{move_data.power ? move_data.power : '-'}</Typography>
+            </Grid>
+            <Grid item>
+              { move_data.damage_class === 'physical' ? (
+                <img src={Phisical} alt="fisico" style={{ width: "50px", marginTop: "10px" }} />
+              ) : move_data.damage_class === 'special' ? (
+                <img src={Special} alt="especial" style={{ width: "50px", marginTop: "10px" }} />
+              ) : move_data.damage_class === 'status' ? (
+                <img src={Status} alt="status" style={{ width: "50px", marginTop: "10px" }} />
+              ) : null}
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} alignItems="center">
+            <Box style={{ backgroundColor: typeColors[move_data.type], padding: "5px", borderRadius: "10px", width: "100%", textAlign: "center", marginTop: "5px" }}>
+              <Typography style={{ fontWeight: "bold", fontSize: 12, color: isLightColor(typeColors[move_data.type]) ? '#000' : '#fff' }}>{move_data.type}</Typography>
+            </Box>
+          </Grid>
+        </Box>
+      )
+    })
+  };
+
+  const handleGoBack = () => {
+    setLoading(true);
+    // Esperar un poco antes de navegar para que la animación se vea
+    setTimeout(() => {
+      navigate('/');
+    }, 10); // puedes ajustar el tiempo si lo deseas
+  };
+
+  const handleChangeView = (view) => {
+    if (activeView !== view) {
+      setLoadingView(true);
+      setTimeout(() => {
+        setActiveView(view);
+        setLoadingView(false);
+      }, 10); // Ajusta el tiempo según lo que dure el cambio real
+    }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    if (pokemonMovesTabIndex !== newValue) {
+      setLoadingTab(true);
+      setTimeout(() => {
+        setPokemonMovesTabIndex(newValue);
+        setLoadingTab(false);
+      }, 10); // o ajusta al tiempo real que toma el cambio
+    }
+  };
+
   return (
     <Box style={{ padding: "10px 10px 40px 10px", marginTop: "-80px", overflowX: 'hidden' }} bgcolor="#383838" minHeight="100vh">
 
       {/* Barra de navegación de vistas */}
-      <Box display="flex" justifyContent="center" gap={8} style={{ marginTop: "100px", paddingBottom: "10px" }}>
-        <IconButton onClick={() => navigate('/')}>
+      <Box display="flex" justifyContent="center" gap={4} style={{ marginTop: "100px", paddingBottom: "10px" }}>
+        <IconButton onClick={handleGoBack}>
           <ArrowBackIosNew style={{ color: "#fff" }} />
         </IconButton>
-        <IconButton onClick={() => setActiveView('info')} color="primary">
-          <Info style={{ color: "#fff" }} />
-        </IconButton>
-        <IconButton onClick={() => setActiveView('battle')} color="primary">
-          <GiCrossedSwords style={{ color: "#fff" }} />
-        </IconButton>
-        <IconButton onClick={() => setActiveView('swap')} color="primary">
-          <SwapHoriz style={{ color: "#fff" }} />
-        </IconButton>
+
+        <Box sx={{ position: "relative", display: "inline-block", textAlign: "center" }}>
+          <Box sx={{ backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()], borderRadius: "10px", width: "60px", textAlign: "center", padding: "2px", position: "relative" }}>
+            <IconButton onClick={() => handleChangeView('info')} color="primary">
+              <Info sx={{ color: "#000" }} />
+            </IconButton>
+          </Box>
+          
+          {/**Flecha */}
+          { activeView === 'info' ? (
+            <Box 
+              sx={{ 
+                position: "absolute", 
+                bottom: -8, 
+                left: "50%", 
+                transform: "translateX(-50%)", 
+                width: 0, 
+                height: 0, 
+                borderLeft: "8px solid transparent", 
+                borderRight: "8px solid transparent", 
+                borderTop: `8px solid ${bgColors[gen_data.tipos[0].toLowerCase()]}`, 
+                borderRadius: "2px" 
+              }}
+            />
+          ) : null}
+          
+        </Box>
+
+        <Box sx={{ position: "relative", display: "inline-block", textAlign: "center" }}>
+          <Box sx={{ backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()], borderRadius: "10px", width: "60px", textAlign: "center", padding: "2px", position: "relative" }}>
+            <IconButton onClick={() => handleChangeView('battle')} color="primary">
+              <GiCrossedSwords style={{ color: "#000" }} />
+            </IconButton>
+          </Box>
+
+          {/**Flecha */}
+          { activeView === 'battle' ? (
+            <Box 
+              sx={{ 
+                position: "absolute", 
+                bottom: -8, 
+                left: "50%", 
+                transform: "translateX(-50%)", 
+                width: 0, 
+                height: 0, 
+                borderLeft: "8px solid transparent", 
+                borderRight: "8px solid transparent", 
+                borderTop: `8px solid ${bgColors[gen_data.tipos[0].toLowerCase()]}`, 
+                borderRadius: "2px" 
+              }}
+            />
+          ) : null}
+          
+        </Box>
+
+        <Box sx={{ position: "relative", display: "inline-block", textAlign: "center" }}>
+          <Box sx={{ backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()], borderRadius: "10px", width: "60px", textAlign: "center", padding: "2px", position: "relative" }}>
+            <IconButton onClick={() => handleChangeView('swap')} color="primary">
+              <SwapHoriz style={{ color: "#000" }} />
+            </IconButton>
+          </Box>
+
+          {/**Flecha */}
+          { activeView === 'swap' ? (
+            <Box 
+              sx={{ 
+                position: "absolute", 
+                bottom: -8, 
+                left: "50%", 
+                transform: "translateX(-50%)", 
+                width: 0, 
+                height: 0, 
+                borderLeft: "8px solid transparent", 
+                borderRight: "8px solid transparent", 
+                borderTop: `8px solid ${bgColors[gen_data.tipos[0].toLowerCase()]}`, 
+                borderRadius: "2px" 
+              }}
+            />
+          ) : null}
+          
+        </Box>
       </Box>
   
       {activeView === 'info' && (
@@ -188,6 +369,7 @@ const PokedexDetail = () => {
             <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
               Pokedex Descriptions
             </Typography>
+            <Divider style={{ width: "100%" }} />
               <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
                 <IconButton onClick={handlePrev}>
                   <ArrowBackIos />
@@ -240,6 +422,7 @@ const PokedexDetail = () => {
             <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
               Habilities
             </Typography>
+            <Divider style={{ width: "100%", marginBottom: "10px" }} />
             {pokemon.habilidades.map((hab, index) => {
               const isOculta = hab.tipo.toLowerCase() === "oculta";
               const style = {
@@ -248,13 +431,12 @@ const PokedexDetail = () => {
                 padding: "8px",
                 margin: "5px auto",
                 width: "90%",
-                backgroundColor: isOculta ? typeColor : "transparent",
-                color: isOculta ? "#fff" : "#000",
+                backgroundColor: isOculta ? typeColor : "transparent"
               };
 
               return (
                 <Box key={index} style={style}>
-                  <Typography style={{ color: isLightColor(typeColor) }}>
+                  <Typography style={{ color: isOculta ? isLightColor(typeColor) ? '#000' : '#fff' : "#000" }}>
                     {hab.nombre_en}
                   </Typography>
                 </Box>
@@ -268,6 +450,7 @@ const PokedexDetail = () => {
             <Typography style={{ fontWeight: "bold", fontSize: 20 }}>
               Stats
             </Typography>
+            <Divider style={{ width: "100%", marginBottom: "10px" }} />
             <StatsPanel estadisticas={pokemon.estadisticas_base} />
           </Box>
           {/** ========================================= Stats ======================================================== */}
@@ -275,9 +458,42 @@ const PokedexDetail = () => {
       )}
 
       {activeView === 'battle' && (
-        <>
-        Moves
-        </>
+        <Box sx={{ width: '100%' }}>
+          <Tabs value={pokemonMovesTabIndex} onChange={handleTabChange} TabIndicatorProps={{ style: { display: 'none' } }}>
+            {pokemonMovesCategories.map((type, index) => {
+              const isSelected = pokemonMovesTabIndex === index;
+              const unselected_bg = bgColors[gen_data.tipos[0].toLowerCase()]
+              const selected_bg = midBgColors[gen_data.tipos[0].toLowerCase()] || '#aaa';
+              return (
+                <Tab 
+                  key={index} 
+                  sx={{ 
+                    bgcolor: isSelected ? selected_bg : unselected_bg, 
+                    margin: "5px 5px 0px 5px" , 
+                    borderRadius: "10px", 
+                    color: isSelected ? isLightColor(selected_bg) : isLightColor(unselected_bg) ? '#000' : '#fff',
+                    fontSize: 12,
+                    padding: "5px",
+                    fontWeight: "bold"
+                  }}
+                  label={type.replace('_', ' ')} 
+                />
+              )
+            })}
+          </Tabs>
+
+          <Box sx={{ mt: 2 }}>
+            {pokemonMovesCategories.map((type, index) => (
+              <Box key={type} hidden={pokemonMovesTabIndex !== index}>
+                {cleanedMoves[type].length > 0 ? (
+                  renderTable(cleanedMoves[type], type)
+                ) : (
+                  <Typography variant="body2"></Typography>
+                )}
+              </Box>
+            ))}
+          </Box>
+        </Box>
       )}
 
       {activeView === 'swap' && (
@@ -285,6 +501,105 @@ const PokedexDetail = () => {
         Evolutions
         </>
       )}
+
+      {loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: '#383838',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <img
+            src={MasterBall}
+            alt="Pokeball Loading"
+            style={{
+              width: '100px',
+              height: '100px',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
+          <Typography sx={{ color: 'white', marginTop: 2 }}>
+            Loading
+          </Typography>
+        </Box>
+      )}
+
+      {loadingView && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1200,
+            flexDirection: 'column',
+          }}
+        >
+          <img
+            src={MasterBall}
+            alt="Pokeball Loading"
+            style={{
+              width: '100px',
+              height: '100px',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
+          <Typography sx={{ color: 'white', marginTop: 2 }}>
+            Loading
+          </Typography>
+        </Box>
+      )}
+
+      {loadingTab && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1200,
+            flexDirection: 'column',
+          }}
+        >
+          <img
+            src={MasterBall}
+            alt="Pokeball Loading"
+            style={{
+              width: '100px',
+              height: '100px',
+              animation: 'spin 1s linear infinite',
+            }}
+          />
+          <Typography sx={{ color: 'white', marginTop: 2 }}>
+            Loading
+          </Typography>
+        </Box>
+      )}
+
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
 
     </Box>
   );

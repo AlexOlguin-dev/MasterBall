@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 
 const StatsPanel = ({ estadisticas }) => {
   const maxStat = 255; // para normalizar ancho
@@ -41,6 +41,13 @@ const StatsPanel = ({ estadisticas }) => {
           </Box>
         );
       })}
+      <Divider style={{ width: "100%" }} />
+      <Box display="flex" justifyContent="space-between" mt={1} style={{  }}>
+        <Typography variant="body2"></Typography>
+        <Typography variant="body2">
+          TOTAL&nbsp;&nbsp;&nbsp; {statValues.reduce((acc, val) => acc + val, 0)}
+        </Typography>
+      </Box>
     </Box>
   );
 };
