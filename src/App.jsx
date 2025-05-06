@@ -26,6 +26,7 @@ import MasterBall from './assets/img/main_icon.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 
 const DrawerContent = React.memo(({ onClose, onNavigate }) => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const DrawerContent = React.memo(({ onClose, onNavigate }) => {
         </ListItem>
 
         <ListItem button style={{ height: "30px" }} onClick={() => handleNavigation("/Movedex")}>
-          <ListItemIcon><FlashOnIcon /></ListItemIcon>
+          <ListItemIcon><SportsMmaIcon /></ListItemIcon>
           <ListItemText primary="Movedex" />
         </ListItem>
       </List>

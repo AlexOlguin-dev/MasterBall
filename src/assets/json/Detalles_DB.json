@@ -1,5 +1,75 @@
 [
     {
+        "numero_pokedex": 1,
+        "juegos_disponibles": null,
+        "descripciones_en": [
+            "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.",
+            "It can go for days without eating a single morsel. In the bulb on its back, it stores energy.",
+            "The seed on its back is filled with nutrients. The seed grows steadily larger as its body grows.",
+            "It carries a seed on its back right from birth. As it grows older, the seed also grows larger.",
+            "While it is young, it uses the nutrients that are stored in the seeds on its back in order to grow.",
+            "BULBASAUR can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+            "There is a plant seed on its back right from the day this POKéMON is born. The seed slowly grows larger.",
+            "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+            "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
+            "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+            "There is a plant seed on its back right from the day this Pokémon is born. The seed slowly grows larger.",
+            "While it is young, it uses the nutrients that are stored in the seed on its back in order to grow."
+        ],
+        "pokedex_entry_origin_en": [
+            "red",
+            "yellow",
+            "gold",
+            "silver",
+            "crystal",
+            "ruby",
+            "firered",
+            "diamond",
+            "x",
+            "omega-ruby",
+            "sword",
+            "shield"
+        ],
+        "descripciones_es": [
+            "Una rara semilla le fue plantada en el lomo al nacer. La planta brota y crece con este Pokémon.",
+            "Después de nacer, crece alimentándose de las semillas de su lomo.",
+            "A Bulbasaur es fácil verle echándose una siesta al sol. La semilla que tiene en el lomo va creciendo cada vez más a medida que absorbe los rayos del sol.",
+            "Puede sobrevivir largo tiempo sin probar bocado gracias a los nutrientes que guarda en el bulbo del lomo.",
+            "Este Pokémon nace con una semilla en el lomo, que brota con el paso del tiempo.",
+            "Desde que nace, crece alimentándose de los nutrientes que contiene la semilla de su lomo."
+        ],
+        "pokedex_entry_origin_es": [
+            "x",
+            "y",
+            "omega-ruby",
+            "lets-go-pikachu",
+            "sword",
+            "shield"
+        ],
+        "estadisticas_base": {
+            "hp": 45,
+            "attack": 49,
+            "defense": 49,
+            "special-attack": 65,
+            "special-defense": 65,
+            "speed": 45
+        },
+        "habilidades": [
+            {
+                "nombre_en": "Overgrow",
+                "nombre_es": "Espesura",
+                "tipo": "Normal"
+            },
+            {
+                "nombre_en": "Chlorophyll",
+                "nombre_es": "Clorofila",
+                "tipo": "Oculta"
+            }
+        ],
+        "peso": 69,
+        "altura": 7
+    },
+    {
         "numero_pokedex": 2,
         "juegos_disponibles": null,
         "descripciones_en": [

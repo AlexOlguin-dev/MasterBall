@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, IconButton, Tabs, Tab, Grid, Divider } from '@mui/material';
 import '../assets/css/maincss.css';
 import { ArrowBackIos, ArrowForwardIos, ArrowBackIosNew, Info, SwapHoriz } from '@mui/icons-material';
-import { GiCrossedSwords } from 'react-icons/gi';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StatsPanel from './StatsPanel';
 import Phisical from '../assets/img/moves/phisical.png';
 import Special from '../assets/img/moves/special.png';
@@ -252,7 +252,7 @@ const PokedexDetail = () => {
         <Box sx={{ position: "relative", display: "inline-block", textAlign: "center" }}>
           <Box sx={{ backgroundColor: bgColors[gen_data.tipos[0].toLowerCase()], borderRadius: "10px", width: "60px", textAlign: "center", padding: "2px", position: "relative" }}>
             <IconButton onClick={() => handleChangeView('battle')} color="primary">
-              <GiCrossedSwords style={{ color: "#000" }} />
+              <SportsMmaIcon style={{ color: "#000" }} />
             </IconButton>
           </Box>
 
@@ -324,7 +324,7 @@ const PokedexDetail = () => {
               >
                 <img
                   src={`/assets/img/official_art/${gen_data.numero_pokedex}.png`}
-                  alt={pokemon.nombre}
+                  alt="Pokemon"
                   style={{ width: 120, height: 120 }}
                 />
               </Box>

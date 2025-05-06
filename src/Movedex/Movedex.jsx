@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, TextField, Select, MenuItem, Button } from '@mui/material';
+import { Box, Typography, Grid, TextField, Select, MenuItem, Button, Menu, IconButton } from '@mui/material';
 import Phisical from '../assets/img/moves/phisical.png';
 import Special from '../assets/img/moves/special.png';
 import Status from '../assets/img/moves/status.png';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import SortIcon from '@mui/icons-material/Sort';
 import MovesData from '../assets/json/Movimientos_DB.json';
 
 const bgColors = {
@@ -29,6 +30,10 @@ const Movedex = ({ onLoadFinish }) => {
   const movesData = MovesData;
   const [filter, setFilter] = useState('');
 	const [damageClassFilter, setDamageClassFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [sortByPower, setSortByPower] = useState(false);
+  const [sortByAccuracy, setSortByAccuracy] = useState(null);
 
 	useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,6 +41,11 @@ const Movedex = ({ onLoadFinish }) => {
     }, 10);
     return () => clearTimeout(timer);
   }, [onLoadFinish]);
+
+  // Manejo del menú desplegable
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget); // abre el menú al hacer click en el botón
+  };
 
   const isLightColor = (color) => {
     if (!color) return true;
@@ -47,15 +57,53 @@ const Movedex = ({ onLoadFinish }) => {
     return brightness > 140;
   };
 
-  const filteredMoves = Object.values(movesData).filter(move => {
-		const matchesName = move.name.toLowerCase().includes(filter.toLowerCase());
-		const matchesDamageClass = damageClassFilter ? move.damage_class === damageClassFilter : true;
-		return matchesName && matchesDamageClass;
-	});
+  const filteredMoves = Object.values(movesData)
+  .filter((move) => {
+    const matchesName = move.name.toLowerCase().includes(filter.toLowerCase());
+    const matchesDamageClass = damageClassFilter ? move.damage_class === damageClassFilter : true;
+    const matchesType = typeFilter ? move.type === typeFilter : true;
+    return matchesName && matchesDamageClass && matchesType;
+  })
+  .sort((a, b) => {
+    if (sortByPower === 'asc') {
+      return (a.power || 0) - (b.power || 0); // menor a mayor
+    } else if (sortByPower === 'desc') {
+      return (b.power || 0) - (a.power || 0); // mayor a menor
+    } else if (sortByAccuracy === 'asc') {
+      return (a.accuracy || 0) - (b.accuracy || 0); // menor a mayor
+    } else if (sortByAccuracy === 'desc') {
+      return (b.accuracy || 0) - (a.accuracy || 0); // mayor a menor
+    }
+    return 0; // sin orden si no se activa el sort
+  });
 
 	function getMoveIdByName(moveName, dict) {
 		return Object.keys(dict).find((key) => dict[key].name === moveName);
 	}
+
+  const handleOrderByPowerDesc = () => {
+    setSortByPower('desc'); // orden ascendente (de menor a mayor)
+    setAnchorEl(null); // cierra el menú
+  };
+  
+  const handleOrderByPowerAsc = () => {
+    setSortByPower('asc'); // orden descendente (de mayor a menor)
+    setAnchorEl(null); // cierra el menú
+  };
+
+  const handleOrderByAccuracyDesc = () => {
+    setSortByAccuracy('desc'); // orden descendente (de mayor a menor)
+    setAnchorEl(null); // cierra el menú
+  };
+  
+  const handleOrderByAccuracyAsc = () => {
+    setSortByAccuracy('asc'); // orden ascendente (de menor a mayor)
+    setAnchorEl(null); // cierra el menú
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null); // cierra el menú si clicas fuera
+  };
 
   const moveNames = filteredMoves.map((move, index) => (
     <Box 
@@ -193,9 +241,85 @@ const Movedex = ({ onLoadFinish }) => {
 						</Box>
 					</MenuItem>
 				</Select>
+        <Select
+          fullWidth
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          displayEmpty
+          size="small"
+          sx={{
+            marginTop: "10px",
+            backgroundColor: '#e0e0e0',
+            borderRadius: 1,
+            '& .MuiSelect-select': {
+              padding: '8px',
+              fontWeight: 'bold',
+              fontSize: 14,
+              color: '#000'
+            }
+          }}
+        >
+          <MenuItem value="">
+            <span>All Types</span>
+          </MenuItem>
+          {Object.keys(typeColors).map((type) => (
+            <MenuItem key={type} value={type}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                <span style={{ textTransform: 'capitalize' }}>{type}</span>
+              </Box>
+            </MenuItem>
+          ))}
+        </Select>
       </Box>
 
       {moveNames}
+
+      {/** Boton menu de orden */}
+      <Button
+        aria-controls="menu"
+        aria-haspopup="true"
+        onClick={handleClickMenu}
+        sx={{
+          position: 'fixed',
+					bottom: 100,
+					right: 16,
+					zIndex: 1000,
+					borderRadius: '50%',
+					minWidth: 'auto',
+					padding: 1.5,
+					backgroundColor: '#000'
+        }}
+      >
+        <SortIcon style={{ color: "#fff" }} />
+      </Button>
+
+      <Menu
+        id="menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+        anchorOrigin={{
+          vertical: 'bottom',  // Controla la posición vertical
+          horizontal: 'center', // Controla la posición horizontal
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <MenuItem onClick={handleOrderByPowerAsc}>
+          Order by Power ↑
+        </MenuItem>
+        <MenuItem onClick={handleOrderByPowerDesc}>
+          Order by Power ↓
+        </MenuItem>
+        <MenuItem onClick={handleOrderByAccuracyAsc}>
+          Order by Acc ↑
+        </MenuItem>
+        <MenuItem onClick={handleOrderByAccuracyDesc}>
+          Order by Acc ↓
+        </MenuItem>
+      </Menu>
 
 			{/* Botón fijo en la esquina inferior derecha */}
 			<Button

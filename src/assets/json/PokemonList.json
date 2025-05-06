@@ -8523,6 +8523,15 @@
         "icono_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1004.png"
     },
     {
+        "numero_pokedex": 1005,
+        "nombre": "roaring-moon",
+        "tipos": [
+            "Dark",
+            "Dragon"
+        ],
+        "icono_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1004.png"
+    },
+    {
         "numero_pokedex": 1006,
         "nombre": "Iron-valiant",
         "tipos": [
