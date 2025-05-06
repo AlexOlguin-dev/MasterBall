@@ -4,7 +4,7 @@
             "en": "drizzle"
         },
         "description": {
-            "en": "Summons rain in battle. The weather changes to rain when this Pokémon enters battle and does not end unless replaced by another weather condition.\n\nIf multiple Pokémon with this ability, drought, sand stream, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay."
+            "en": "Summons rain in battle for five turns.\n\nIf multiple Pokémon with this ability, drought, sand stream, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay.\n\nIn rain water moves have a 50% boost."
         }
     },
     "2": {
@@ -212,7 +212,7 @@
             "en": "sand-stream"
         },
         "description": {
-            "en": "Summons a sandstorm. The weather changes to a sandstorm when this Pokémon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pokémon with this ability, drizzle, drought, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay.\n\nOverworld: If the lead Pokémon has this ability, the wild encounter rate is halved in a sandstorm."
+            "en": "Summons a sandstorm for five turns. If multiple Pokémon with this ability, drizzle, drought, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay.\n\nOverworld: If the lead Pokémon has this ability, the wild encounter rate is halved in a sandstorm.\n\nIn sand rock pokemon gain a 50% special defense boost.\n\nSand storm causes small damage every turn.\n\nRock, ground and steel Pokémon are inmune to damage caused by sand storm."
         }
     },
     "28": {
@@ -308,7 +308,7 @@
             "en": "drought"
         },
         "description": {
-            "en": "Summons sunlight in battle. The weather changes to strong sunlight when this Pokémon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pokémon with this ability, drizzle, sand stream, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay."
+            "en": "Summons sunlight in battle for five turns. If multiple Pokémon with this ability, drizzle, sand stream, or snow warning are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay.\n\nFire moves gain a 50% boots."
         }
     },
     "40": {
@@ -596,7 +596,7 @@
             "en": "snow-warning"
         },
         "description": {
-            "en": "The Pokémon summons a\nhailstorm in battle. The weather changes to hail when this Pokémon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pokémon with this ability, drizzle, drought, or sand stream are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay."
+            "en": "The Pokémon summons a\nhailstorm in battle. The weather changes to hail when this Pokémon enters battle and does not end unless cancelled by another weather condition.\n\nIf multiple Pokémon with this ability, drizzle, drought, or sand stream are sent out at the same time, the abilities will activate in order of Speed, respecting trick room.  Each ability's weather will cancel the previous weather, and only the weather summoned by the slowest of the Pokémon will stay.\n\nIn hailstorm Ice Pokémon has a 50% defense boost."
         }
     },
     "76": {

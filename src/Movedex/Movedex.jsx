@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, TextField, Select, MenuItem, Button, Menu, IconButton } from '@mui/material';
+import { Box, Typography, Grid, TextField, Select, MenuItem, Button, Menu } from '@mui/material';
 import Phisical from '../assets/img/moves/phisical.png';
 import Special from '../assets/img/moves/special.png';
 import Status from '../assets/img/moves/status.png';
@@ -160,18 +160,7 @@ const Movedex = ({ onLoadFinish }) => {
       <div ref={topRef}></div>
 
       {/* FILTRO DE MOVIMIENTOS */}
-      <Box
-        mb={2}
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          backgroundColor: '#383838',
-          paddingBottom: 2,
-          padding: "110px 10px 0px 0px",
-          marginRight: "-10px"
-        }}
-      >
+      <Box mb={2} sx={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#383838', paddingBottom: 2, padding: "110px 10px 0px 0px", marginRight: "-10px" }}>
         <TextField
           fullWidth
           placeholder="Move Name"

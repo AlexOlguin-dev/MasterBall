@@ -21,6 +21,8 @@ import Pokedex from './Pokedex/Pokedex';
 import PokedexDetail from './Pokedex/PokedexDetail';
 import Movedex from './Movedex/Movedex';
 import MoveDetails from './Movedex/MoveDetails';
+import HabilityDex from './HabilityDex/HabilityDex';
+import HabilityDetails from './HabilityDex/HabiityDetails';
 
 import MasterBall from './assets/img/main_icon.png';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -62,24 +64,15 @@ const DrawerContent = React.memo(({ onClose, onNavigate }) => {
           <ListItemIcon><SportsMmaIcon /></ListItemIcon>
           <ListItemText primary="Movedex" />
         </ListItem>
+
+        <ListItem button style={{ height: "30px" }} onClick={() => handleNavigation("/Habilitydex")}>
+          <ListItemIcon><FlashOnIcon /></ListItemIcon>
+          <ListItemText primary="Habilitydex" />
+        </ListItem>
       </List>
     </Box>
   );
 });
-
-// Loader hook
-function useRouteChangeLoader() {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 400); // Simula carga
-    return () => clearTimeout(timeout);
-  }, [location.pathname]);
-
-  return loading;
-}
 
 function AppContent() {
   const [open, setOpen] = useState(false);
@@ -149,6 +142,8 @@ function AppContent() {
           <Route path="/pokedex_detail/:id" element={<PokedexDetail />} />
           <Route path="/Movedex" element={<Movedex onLoadFinish={finishLoading} />} />
           <Route path="/move_detail/:id" element={<MoveDetails />} />
+          <Route path="/Habilitydex" element={<HabilityDex onLoadFinish={finishLoading} />} />
+          <Route path="/hability_detail/:id" element={<HabilityDetails />} />
         </Routes>
       </Box>
     </>
