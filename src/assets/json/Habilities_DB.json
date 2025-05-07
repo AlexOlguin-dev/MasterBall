@@ -2118,5 +2118,13 @@
         "description": {
             "en": "Pokémon poisoned by Pecharunt's moves will also become confused. When a Pokémon is poisoned by any of Pecharunt's moves, it will also become confused."
         }
+    },
+    "266": {
+        "name": {
+            "en": "Intimidate"
+        },
+        "description": {
+            "en": "Reduces foe's attack in one stage upon entering battle."
+        }
     }
 }

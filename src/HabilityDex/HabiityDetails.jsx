@@ -85,7 +85,6 @@ const HabilityDetails = () => {
 
 	useEffect(() => {
 		window.scrollTo(0,0)
-		console.log(ability)
 	},[])
 
 	const handleGoBack = () => {
@@ -128,13 +127,18 @@ const HabilityDetails = () => {
 					(isSelected.hidden && habilidad.tipo.toLowerCase() === "oculta"))
 				) {
 					const pokemonInfo = PokemonList.find(p => p.numero_pokedex === pokemon.numero_pokedex);
-	
+				
+					if (!pokemonInfo || !pokemonInfo.tipos || !pokemonInfo.tipos.length) {
+						console.warn(`No se encontró información para el Pokémon N°${pokemon.numero_pokedex}`);
+						return;
+					}
+				
 					matchingPokemons.push({
 						numero: pokemon.numero_pokedex,
-						nombre: pokemonInfo?.nombre || "Desconocido",
-						type: pokemonInfo?.tipos,
+						nombre: pokemonInfo.nombre || "Desconocido",
+						type: pokemonInfo.tipos,
 						tipo: habilidad.tipo,
-						icono: pokemonInfo?.icono_url
+						icono: pokemonInfo.icono_url
 					});
 				}
 			});

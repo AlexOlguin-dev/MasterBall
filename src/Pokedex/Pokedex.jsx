@@ -67,7 +67,7 @@ const bgColors = {
   steel: '#bdbdbd'
 };
 
-const excludedWords = ['-starter', '-mode', '-build', '-gulping', '-gorging', '-10', '-totem'];
+const excludedWords = ['-starter', '-mode', '-build', '-gulping', '-gorging', '-10', '-totem', '-busted'];
 
 const isLightColor = (color) => {
   if (!color) return true;

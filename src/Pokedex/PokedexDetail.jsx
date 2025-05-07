@@ -9,10 +9,13 @@ import Phisical from '../assets/img/moves/phisical.png';
 import Special from '../assets/img/moves/special.png';
 import Status from '../assets/img/moves/status.png';
 import MasterBall from '../assets/img/main_icon.png';
+import ThunderStone from '../assets/img/stones/Piedra_trueno_EP.png';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import PokemonList from '../assets/json/PokemonList.json';
 import PokemonDetail from '../assets/json/Detalles_DB.json';
 import PokemonMoves from '../assets/json/PokemonMoves_DB.json';
 import MovesData from '../assets/json/Movimientos_DB.json';
+import EvolutionData from '../assets/json/Evolution_DB.json';
 
 const bgColors = {
   grass: '#81c784',
@@ -211,6 +214,106 @@ const PokedexDetail = () => {
         setLoadingTab(false);
       }, 10); // o ajusta al tiempo real que toma el cambio
     }
+  };
+
+  const obtenerNumeroPokedexPorNombre = (pokemonLista, nombreBuscado) => {
+    const pokemon = pokemonLista.find(p => p.nombre.toLowerCase() === nombreBuscado.toLowerCase());
+    return pokemon ? pokemon.numero_pokedex : null;
+  }
+
+  const render_evolutions = () => {
+    const evolutionChain = EvolutionData[gen_data.nombre.toLowerCase()]?.evolution_chain_list;
+    if (!evolutionChain || !Array.isArray(evolutionChain)) {
+      return null; // o <p>No hay datos de evolución</p>
+    }
+  
+    const evolData = EvolutionData[gen_data.nombre.toLowerCase()]?.evolution_chain_data?.chain;
+  
+    const evolutionElements = [];
+  
+    for (let i = 0; i < evolutionChain.length; i++) {
+      const poke = evolutionChain[i];
+      const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, poke);
+  
+      // Renderizar el Pokémon
+      evolutionElements.push(
+        <Box key={`poke-${i}`} style={{ backgroundColor: bgColors[gen_data.tipos[0]?.toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", margin: "10px" }}>
+          <Box style={{ width: 100, height: 100, backgroundColor: midBgColors[gen_data.tipos[0].toLowerCase()], borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {numeroPokedex ? (
+              <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={poke} style={{ width: 120, height: 120 }} />
+            ) : (
+              <p>{poke}</p>
+            )}
+          </Box>
+        </Box>
+      );
+  
+      // Insertar método de evolución entre pares
+      if (i < evolutionChain.length - 1) {
+        let evolutionDetails;
+        if (i === 0) {
+          evolutionDetails = evolData?.evolves_to?.[0]?.evolution_details?.[0];
+        } else if (i === 1) {
+          evolutionDetails = evolData?.evolves_to?.[0]?.evolves_to?.[0]?.evolution_details?.[0];
+        }
+  
+        if (evolutionDetails) {
+          const trigger = evolutionDetails.trigger?.name;
+          const key = gen_data.tipos[0].toLowerCase();
+          const bg = typeColors[key] || '#aaa';
+          const textColor = isLightColor(bg) ? '#000' : '#fff';
+        
+          if (trigger === "level-up") {
+            evolutionElements.push(
+              <Box
+                key={`evol-${i}`}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  margin: "5px 0",
+                  fontWeight: "bold",
+                  backgroundColor: bg,
+                  color: textColor,
+                  padding: "10px",
+                  borderRadius: "10px",
+                }}
+              >
+                <div>Level {evolutionDetails.min_level}</div>
+                <KeyboardDoubleArrowDownIcon style={{ color: textColor }} />
+              </Box>
+            );
+          } else if (trigger === "use-item" && evolutionDetails.item?.name) {
+            evolutionElements.push(
+              <Box
+                key={`item-evol-${i}`}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  margin: "5px 0",
+                  fontWeight: "bold",
+                  backgroundColor: bg,
+                  color: textColor,
+                  padding: "10px",
+                  borderRadius: "10px",
+                }}
+              >
+                <div>Use {evolutionDetails.item.name.replace(/-/g, ' ')}</div>
+                { evolutionDetails.item?.name === 'thunder-stone' && (
+                  <img src={ThunderStone} alt="thunder" style={{ width: "40px" }} />
+                )}
+                <KeyboardDoubleArrowDownIcon style={{ color: textColor }} />
+              </Box>
+            );
+          }
+        }
+      }
+    }
+  
+    return evolutionElements;
   };
 
   return (
@@ -502,9 +605,9 @@ const PokedexDetail = () => {
       )}
 
       {activeView === 'swap' && (
-        <>
-        Evolutions
-        </>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          {render_evolutions()}
+        </Box>
       )}
 
       {loading && (
