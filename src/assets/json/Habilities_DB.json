@@ -2126,5 +2126,13 @@
         "description": {
             "en": "Reduces foe's attack in one stage upon entering battle."
         }
+    },
+    "267": {
+        "name": {
+            "en": "compound-eyes"
+        },
+        "description": {
+            "en": "increases the accuracy of moves used by the Pokémon with this Ability by multiplying the original accuracy by a factor of 1.3. This means that Thunder, for example, has 91% accuracy as opposed to the usual 70% (70 × 1.3 = 91%). Starting in Generation V, this multiplier is approximated as 5325/4096. It does not affect one-hit knockout moves."
+        }
     }
 }

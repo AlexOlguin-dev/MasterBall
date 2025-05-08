@@ -15,6 +15,7 @@ import PokemonDetail from '../assets/json/Detalles_DB.json';
 import PokemonMoves from '../assets/json/PokemonMoves_DB.json';
 import MovesData from '../assets/json/Movimientos_DB.json';
 import EvolutionData from '../assets/json/Evolution_DB.json';
+import HabilityData from '../assets/json/Habilities_DB.json';
 
 const bgColors = {
   grass: '#81c784',
@@ -81,9 +82,7 @@ const typeColors = {
 
 const evolutionExceptions = [
   "eevee", "flareon", "jolteon", "vaporeon",
-  "leafeon", "glaceon", "umbreon", "espeon", "sylveon",
-  "tyrogue", "hitmontop", "hitmonchan", "hitmonlee",
-  "hydrapple"
+  "leafeon", "glaceon", "umbreon", "espeon", "sylveon"
 ];
 
 const PokedexDetail = () => {
@@ -150,7 +149,13 @@ const PokedexDetail = () => {
     return moves.map((move) => {
       const move_data = MovesData[move.id]
       return (
-        <Box style={{ backgroundColor: bgColors[move_data.type], margin: "5px", borderRadius: "10px", padding: "10px", color: isLightColor(bgColors[move_data.type]) }}>
+        <Box style={{ backgroundColor: bgColors[move_data.type], margin: "5px", borderRadius: "10px", padding: "10px", color: isLightColor(bgColors[move_data.type]) }}
+          onClick={() =>
+            navigate(`/move_detail/${move.id}`, {
+              state: { from: "pokedex", id: gen_data.numero_pokedex }
+            })
+          }
+        >
           <Grid container spacing={2} alignItems="center">
             {type === 'level_up' && (
               <Grid item>
@@ -227,6 +232,11 @@ const PokedexDetail = () => {
     return pokemon ? pokemon.numero_pokedex : null;
   }
 
+  const obtenerTiposPorNombre = (pokemonList, nombre) => {
+    const pokemon = pokemonList.find(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+    return pokemon ? pokemon.tipos : [];
+  };
+
   const renderPokemonBox = (pokeName, tipo, i) => {
     const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, pokeName);
   
@@ -235,19 +245,40 @@ const PokedexDetail = () => {
         backgroundColor: bgColors[tipo] || '#ccc',
         padding: "10px",
         borderRadius: "10px",
-        margin: "10px",
+        margin: "5px",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
       }}>
         <Box style={{
-          width: 100, height: 100,
+          width: 70, height: 70,
           backgroundColor: midBgColors[tipo],
           borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {numeroPokedex ? (
-            <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={pokeName} style={{ width: 120, height: 120 }} />
+            <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={pokeName} style={{ width: 90, height: 90 }} />
           ) : (
             <p>{pokeName}</p>
           )}
+        </Box>
+        <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor(bgColors[tipo]) }}>{pokeName}</Typography>
+        <Box display="flex" gap={0.5}>
+          {obtenerTiposPorNombre(PokemonList,pokeName).map((tipo, i) => {
+            const key = tipo.toLowerCase();
+            const bg = typeColors[key] || '#aaa';
+            const textColor = isLightColor(bg) ? '#000' : '#fff';
+        
+            return (
+              <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                  {tipo}
+                </Typography>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
     );
@@ -289,10 +320,28 @@ const PokedexDetail = () => {
                 color: "#fff",
                 padding: "10px",
                 borderRadius: "10px",
+                textAlign: "center",
+                marginRight: detail.relative_physical_stats === 1 ? "-15px" : null,
+                marginLeft: detail.relative_physical_stats === 0 ? "-15px" : null
               }}
             >
+
+              {detail.gender === 1 && <div>Gender Female + </div>}
+              {detail.gender === 2 && <div>Gender Male + </div>}
+
               {trigger === "level-up" && (
                 <div>
+                  {detail.relative_physical_stats === 1 && <div style={{ fontSize: 12 }}>Ataque &gt; Defensa</div>}
+                  {detail.relative_physical_stats === -1 && <div style={{ fontSize: 12 }}>Ataque &lt; Defensa</div>}
+                  {detail.relative_physical_stats === 0 && <div style={{ fontSize: 12 }}>Ataque = Defensa</div>}
+                  {detail.needs_overworld_rain === true && <div>Rain +</div>}
+                  {detail.turn_upside_down === true && <div>Turn Console Around +</div>}
+                  {detail.min_beauty === 171 && <div>Max Beauty +</div>}
+                  {detail.party_type !== null && <div>{detail.party_type.name} Pokemon in Team + </div>}
+                  {detail.known_move !== null && <div>{detail.known_move.name} + </div>}
+                  {detail.time_of_day !== "" && <div>During {detail.time_of_day}</div>}
+                  {detail.gender === 1 && <div>Gender Female + </div>}
+                  {detail.gender === 2 && <div>Gender Male + </div>}
                   {detail.min_happiness === 160
                     ? "Level Up + Friendship Max"
                     : `Level ${detail.min_level ?? "Up"}`}
@@ -307,6 +356,8 @@ const PokedexDetail = () => {
   
               {trigger === "trade" && <div>Trade</div>}
               {heldItemName && <div>Hold {heldItemName.replace(/-/g, ' ')}</div>}
+
+              {node.species.name === 'primeape' && (<div>Level up + use 20 times Rage Fist</div>)}
   
               <KeyboardDoubleArrowDownIcon />
             </Box>
@@ -373,6 +424,18 @@ const PokedexDetail = () => {
     };
   
     return renderChain(evolChainData);
+  };
+
+  const getHabilityIdByName = (name, habilityData) => {
+    const formattedName = name.toLowerCase().replace(/\s+/g, '-'); // "Tinted Lens" → "tinted-lens"
+  
+    for (const [id, data] of Object.entries(habilityData)) {
+      if (data.name.en.toLowerCase() === formattedName) {
+        return id;
+      }
+    }
+  
+    return null; // Si no se encuentra
   };
 
   return (
@@ -602,7 +665,13 @@ const PokedexDetail = () => {
               };
 
               return (
-                <Box key={index} style={style}>
+                <Box key={index} style={style} 
+                onClick={() =>
+                  navigate(`/hability_detail/${getHabilityIdByName(hab.nombre_en, HabilityData)}`, {
+                    state: { from: "pokedex", id: gen_data.numero_pokedex }
+                  })
+                }
+                >
                   <Typography style={{ color: isOculta ? isLightColor(typeColor) ? '#000' : '#fff' : "#000" }}>
                     {hab.nombre_en}
                   </Typography>
@@ -665,7 +734,251 @@ const PokedexDetail = () => {
 
       {activeView === 'swap' && (
         <Box display="flex" flexDirection="column" alignItems="center">
-          {render_evolutions()}
+          {evolutionExceptions.includes(gen_data.nombre.toLowerCase()) ? (
+            <>
+              {/** 133, 134, 135, 136, 196, 197, 470, 471, 700 */}
+
+              {/**EEVEE */}
+              <Box 
+                style={{
+                  backgroundColor: "#EEEEEE",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  margin: "5px",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  display: "flex",
+                }}
+              >
+                <Box style={{
+                  width: 70, height: 70,
+                  backgroundColor: "#FAFAFA",
+                  borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <img src={`/assets/img/official_art/133.png`} alt="eevee" style={{ width: 90, height: 90 }} />
+                </Box>
+                <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor("#EEEEEE") }}>Eevee</Typography>
+                <Box display="flex" gap={0.5}>
+                  {obtenerTiposPorNombre(PokemonList,'eevee').map((tipo, i) => {
+                    const key = tipo.toLowerCase();
+                    const bg = typeColors[key] || '#aaa';
+                    const textColor = isLightColor(bg) ? '#000' : '#fff';
+                  
+                    return (
+                      <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                        <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                          {tipo}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Box>
+              {/**EEVEE */}
+
+              <Box display="flex" gap={2} justifyContent="center" flexWrap="wrap" mt={2}>
+                {[{ num: 134, name: "Vaporeon" }, { num: 135, name: "Jolteon" }, { num: 136, name: "Flareon" }].map(({ num, name }) => (
+                  <Box 
+                    key={num}
+                    style={{
+                      backgroundColor: "#EEEEEE",
+                      padding: "10px",
+                      borderRadius: "10px",
+                      margin: "5px",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      display: "flex",
+                    }}
+                  >
+                    <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}> Use</Typography>
+                    { num === 134 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Water Stone</Typography> }
+                    { num === 135 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Electric Stone</Typography> }
+                    { num === 136 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Fire Stone</Typography> }
+                    <KeyboardDoubleArrowDownIcon style={{ marginBottom: "10px" }} />
+                    <Box style={{
+                      width: 70, height: 70,
+                      backgroundColor: "#FAFAFA",
+                      borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <img src={`/assets/img/official_art/${num}.png`} alt={name.toLowerCase()} style={{ width: 90, height: 90 }} />
+                    </Box>
+                    <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor("#EEEEEE") }}>
+                      {name}
+                    </Typography>
+                    <Box display="flex" gap={0.5}>
+                      {obtenerTiposPorNombre(PokemonList, name.toLowerCase()).map((tipo, i) => {
+                        const key = tipo.toLowerCase();
+                        const bg = typeColors[key] || '#aaa';
+                        const textColor = isLightColor(bg) ? '#000' : '#fff';
+
+                        return (
+                          <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                            <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                              {tipo}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+
+              <Box display="flex" gap={2} justifyContent="center" flexWrap="wrap" mt={2}>
+                {[{ num: 197, name: "Umbreon" }, { num: 196, name: "Espeon" }].map(({ num, name }) => (
+                  <Box 
+                    key={num}
+                    style={{
+                      backgroundColor: "#EEEEEE",
+                      padding: "10px",
+                      borderRadius: "10px",
+                      margin: "5px",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      display: "flex",
+                    }}
+                  >
+                    <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Max Friendship</Typography>
+                    { num === 197 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>During Night</Typography> }
+                    { num === 196 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>During Day</Typography> }
+                    <KeyboardDoubleArrowDownIcon style={{ marginBottom: "10px" }} />
+                    <Box style={{
+                      width: 70, height: 70,
+                      backgroundColor: "#FAFAFA",
+                      borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <img src={`/assets/img/official_art/${num}.png`} alt={name.toLowerCase()} style={{ width: 90, height: 90 }} />
+                    </Box>
+                    <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor("#EEEEEE") }}>
+                      {name}
+                    </Typography>
+                    <Box display="flex" gap={0.5}>
+                      {obtenerTiposPorNombre(PokemonList, name.toLowerCase()).map((tipo, i) => {
+                        const key = tipo.toLowerCase();
+                        const bg = typeColors[key] || '#aaa';
+                        const textColor = isLightColor(bg) ? '#000' : '#fff';
+
+                        return (
+                          <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                            <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                              {tipo}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+
+              <Box display="flex" gap={2} justifyContent="center" flexWrap="wrap" mt={2}>
+                {[{ num: 471, name: "Glaceon" }, { num: 470, name: "Leafeon" }].map(({ num, name }) => (
+                  <Box 
+                    key={num}
+                    style={{
+                      backgroundColor: "#EEEEEE",
+                      padding: "10px",
+                      borderRadius: "10px",
+                      margin: "5px",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      display: "flex",
+                    }}
+                  >
+                    <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Use</Typography>
+                    { num === 471 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Ice Stone</Typography> }
+                    { num === 470 && <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Leaf Stone</Typography> }
+                    <KeyboardDoubleArrowDownIcon style={{ marginBottom: "10px" }} />
+                    <Box style={{
+                      width: 70, height: 70,
+                      backgroundColor: "#FAFAFA",
+                      borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <img src={`/assets/img/official_art/${num}.png`} alt={name.toLowerCase()} style={{ width: 90, height: 90 }} />
+                    </Box>
+                    <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor("#EEEEEE") }}>
+                      {name}
+                    </Typography>
+                    <Box display="flex" gap={0.5}>
+                      {obtenerTiposPorNombre(PokemonList, name.toLowerCase()).map((tipo, i) => {
+                        const key = tipo.toLowerCase();
+                        const bg = typeColors[key] || '#aaa';
+                        const textColor = isLightColor(bg) ? '#000' : '#fff';
+
+                        return (
+                          <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                            <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                              {tipo}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+
+              <Box display="flex" justifyContent="center" mt={2}>
+                <Box 
+                  style={{
+                    backgroundColor: "#EEEEEE",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    margin: "5px",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    display: "flex",
+                  }}
+                >
+                  <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Max Friendship +</Typography>
+                  <Typography style={{ color: "#000", fontSize: 12, fontWeight: "bold" }}>Know Fairy Move</Typography>
+                  <KeyboardDoubleArrowDownIcon style={{ marginBottom: "10px" }} />
+                  <Box style={{
+                    width: 70, height: 70,
+                    backgroundColor: "#FAFAFA",
+                    borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <img src={`/assets/img/official_art/700.png`} alt="sylveon" style={{ width: 90, height: 90 }} />
+                  </Box>
+                  <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor("#EEEEEE") }}>
+                    Sylveon
+                  </Typography>
+                  <Box display="flex" gap={0.5}>
+                    {obtenerTiposPorNombre(PokemonList, "sylveon").map((tipo, i) => {
+                      const key = tipo.toLowerCase();
+                      const bg = typeColors[key] || '#aaa';
+                      const textColor = isLightColor(bg) ? '#000' : '#fff';
+
+                      return (
+                        <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
+                          <Typography fontSize={12} fontWeight="bold" color={textColor}>
+                            {tipo}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                </Box>
+              </Box>
+            </>
+          ) : (
+            render_evolutions()
+          )}
         </Box>
       )}
 

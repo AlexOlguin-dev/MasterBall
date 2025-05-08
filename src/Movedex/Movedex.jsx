@@ -31,6 +31,7 @@ const Movedex = ({ onLoadFinish }) => {
   const [filter, setFilter] = useState('');
 	const [damageClassFilter, setDamageClassFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [PriorityFilter,setPriorityFilter] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortByPower, setSortByPower] = useState(false);
   const [sortByAccuracy, setSortByAccuracy] = useState(null);
@@ -62,7 +63,8 @@ const Movedex = ({ onLoadFinish }) => {
     const matchesName = move.name.toLowerCase().includes(filter.toLowerCase());
     const matchesDamageClass = damageClassFilter ? move.damage_class === damageClassFilter : true;
     const matchesType = typeFilter ? move.type === typeFilter : true;
-    return matchesName && matchesDamageClass && matchesType;
+    const matchesPriority = PriorityFilter ? move.priority === PriorityFilter : true
+    return matchesName && matchesDamageClass && matchesType && matchesPriority;
   })
   .sort((a, b) => {
     if (sortByPower === 'asc') {
@@ -258,6 +260,88 @@ const Movedex = ({ onLoadFinish }) => {
               </Box>
             </MenuItem>
           ))}
+        </Select>
+        <Select
+          fullWidth
+          value={PriorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          displayEmpty
+          size="small"
+          sx={{
+            marginTop: "10px",
+            backgroundColor: '#e0e0e0',
+            borderRadius: 1,
+            '& .MuiSelect-select': {
+              padding: '8px',
+              fontWeight: 'bold',
+              fontSize: 14,
+              color: '#000'
+            }
+          }}
+        >
+          <MenuItem value="">
+            <span>All Priorities</span>
+          </MenuItem>
+          <MenuItem key="-7" value={-7}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-7</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={-6}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-6</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={-5}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-5</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={-4}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-4</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={-3}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-3</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={-1}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>-1</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={0}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>0</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={1}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>+1</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>+2</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={3}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>+3</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={4}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>+4</span>
+            </Box>
+          </MenuItem>
+          <MenuItem key="-7" value={5}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+              <span style={{ textTransform: 'capitalize' }}>+5</span>
+            </Box>
+          </MenuItem>
         </Select>
       </Box>
 

@@ -23140,7 +23140,8 @@
         "evolution_chain_list": [
             "ralts",
             "kirlia",
-            "gardevoir"
+            "gardevoir",
+						"gallade"
         ],
         "evolution_chain_data": {
             "baby_trigger_item": null,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Box, Typography, IconButton, Divider, Grid, Tabs, Tab,Button } from '@mui/material';
 import '../assets/css/maincss.css';
 import { ArrowBackIosNew, Info } from '@mui/icons-material';
@@ -87,6 +87,9 @@ const MoveDetails = () => {
 	const navigate = useNavigate();
 	const topRef = useRef(null);
 	const { id } = useParams();
+	const location = useLocation();
+	const from = location.state?.from;
+	const idPokedex = location.state?.id;
 	const move = moveDict[id];
 	const [loading, setLoading] = useState(false);
 	const [activeView, setActiveView] = useState('info');
@@ -120,11 +123,15 @@ const MoveDetails = () => {
   }
 
 	const handleGoBack = () => {
-    setLoading(true);
-    // Esperar un poco antes de navegar para que la animación se vea
-    setTimeout(() => {
-      navigate('/Movedex');
-    }, 10); // puedes ajustar el tiempo si lo deseas
+    if (from === "pokedex") {
+			navigate(`/pokedex_detail/${idPokedex}`)
+		}else{
+      setLoading(true);
+      // Esperar un poco antes de navegar para que la animación se vea
+      setTimeout(() => {
+        navigate('/Movedex');
+      }, 10); // puedes ajustar el tiempo si lo deseas
+    }
   };
 
 	const getCategoryIcon = (category) => {

@@ -23,12 +23,14 @@ import Movedex from './Movedex/Movedex';
 import MoveDetails from './Movedex/MoveDetails';
 import HabilityDex from './HabilityDex/HabilityDex';
 import HabilityDetails from './HabilityDex/HabiityDetails';
+import ItemDex from './ItemDex/ItemDex';
 
 import MasterBall from './assets/img/main_icon.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import CatchingPokemonIcon from '@mui/icons-material/CatchingPokemon';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import SportsMmaIcon from '@mui/icons-material/SportsMma';
+import CategoryIcon from '@mui/icons-material/Category';
 
 const DrawerContent = React.memo(({ onClose, onNavigate }) => {
   const navigate = useNavigate();
@@ -68,6 +70,11 @@ const DrawerContent = React.memo(({ onClose, onNavigate }) => {
         <ListItem button style={{ height: "30px" }} onClick={() => handleNavigation("/Habilitydex")}>
           <ListItemIcon><FlashOnIcon /></ListItemIcon>
           <ListItemText primary="Habilitydex" />
+        </ListItem>
+
+        <ListItem button style={{ height: "30px" }} onClick={() => handleNavigation("/Itemdex")}>
+          <ListItemIcon><CategoryIcon /></ListItemIcon>
+          <ListItemText primary="Itemdex" />
         </ListItem>
       </List>
     </Box>
@@ -144,6 +151,7 @@ function AppContent() {
           <Route path="/move_detail/:id" element={<MoveDetails />} />
           <Route path="/Habilitydex" element={<HabilityDex onLoadFinish={finishLoading} />} />
           <Route path="/hability_detail/:id" element={<HabilityDetails />} />
+          <Route path="/Itemdex" element={<ItemDex onLoadFinish={finishLoading} />} />
         </Routes>
       </Box>
     </>

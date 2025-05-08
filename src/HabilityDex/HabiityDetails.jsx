@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../assets/css/maincss.css';
 import { Box, IconButton, Typography, Tab, Tabs } from '@mui/material';
 import { ArrowBackIosNew } from '@mui/icons-material';
@@ -75,6 +75,9 @@ const HabilityDetails = () => {
 	const navigate = useNavigate();
 	const topRef = useRef(null);
 	const { id } = useParams();
+	const location = useLocation();
+	const from = location.state?.from;
+	const idPokedex = location.state?.id;
 	const ability = Habilities[id];
 	const [loading, setLoading] = useState(false);
 	const [activeList, setActiveList] = useState('normal');
@@ -88,11 +91,15 @@ const HabilityDetails = () => {
 	},[])
 
 	const handleGoBack = () => {
-    setLoading(true);
-    // Esperar un poco antes de navegar para que la animación se vea
-    setTimeout(() => {
-      navigate('/Habilitydex');
-    }, 10); // puedes ajustar el tiempo si lo deseas
+		if (from === "pokedex") {
+			navigate(`/pokedex_detail/${idPokedex}`)
+		}else{
+			setLoading(true);
+			// Esperar un poco antes de navegar para que la animación se vea
+			setTimeout(() => {
+				navigate('/Habilitydex');
+			}, 10); // puedes ajustar el tiempo si lo deseas
+		}
   };
 
 	const handleChange = (event, newValue) => {
