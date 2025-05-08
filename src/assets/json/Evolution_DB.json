@@ -3541,7 +3541,8 @@
         "evolution_chain_list": [
             "oddish",
             "gloom",
-            "vileplume"
+            "vileplume",
+            "bellossom"
         ],
         "evolution_chain_data": {
             "baby_trigger_item": null,
@@ -3668,7 +3669,8 @@
         "evolution_chain_list": [
             "oddish",
             "gloom",
-            "vileplume"
+            "vileplume",
+            "bellossom"
         ],
         "evolution_chain_data": {
             "baby_trigger_item": null,
@@ -3795,7 +3797,8 @@
         "evolution_chain_list": [
             "oddish",
             "gloom",
-            "vileplume"
+            "vileplume",
+            "bellossom"
         ],
         "evolution_chain_data": {
             "baby_trigger_item": null,
@@ -15215,7 +15218,8 @@
         "evolution_chain_list": [
             "oddish",
             "gloom",
-            "vileplume"
+            "vileplume",
+            "bellossom"
         ],
         "evolution_chain_data": {
             "baby_trigger_item": null,

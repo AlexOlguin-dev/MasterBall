@@ -9,7 +9,6 @@ import Phisical from '../assets/img/moves/phisical.png';
 import Special from '../assets/img/moves/special.png';
 import Status from '../assets/img/moves/status.png';
 import MasterBall from '../assets/img/main_icon.png';
-import ThunderStone from '../assets/img/stones/Piedra_trueno_EP.png';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import PokemonList from '../assets/json/PokemonList.json';
 import PokemonDetail from '../assets/json/Detalles_DB.json';
@@ -79,6 +78,13 @@ const typeColors = {
   dark: '#2b2b2b',
   steel: '#7e7e80'
 };
+
+const evolutionExceptions = [
+  "eevee", "flareon", "jolteon", "vaporeon",
+  "leafeon", "glaceon", "umbreon", "espeon", "sylveon",
+  "tyrogue", "hitmontop", "hitmonchan", "hitmonlee",
+  "hydrapple"
+];
 
 const PokedexDetail = () => {
 
@@ -221,99 +227,152 @@ const PokedexDetail = () => {
     return pokemon ? pokemon.numero_pokedex : null;
   }
 
+  const renderPokemonBox = (pokeName, tipo, i) => {
+    const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, pokeName);
+  
+    return (
+      <Box key={`poke-${i}-${pokeName}`} style={{
+        backgroundColor: bgColors[tipo] || '#ccc',
+        padding: "10px",
+        borderRadius: "10px",
+        margin: "10px",
+      }}>
+        <Box style={{
+          width: 100, height: 100,
+          backgroundColor: midBgColors[tipo],
+          borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {numeroPokedex ? (
+            <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={pokeName} style={{ width: 120, height: 120 }} />
+          ) : (
+            <p>{pokeName}</p>
+          )}
+        </Box>
+      </Box>
+    );
+  };
+  
+  // Método principal para renderizar evoluciones
   const render_evolutions = () => {
-    const evolutionChain = EvolutionData[gen_data.nombre.toLowerCase()]?.evolution_chain_list;
-    if (!evolutionChain || !Array.isArray(evolutionChain)) {
-      return null; // o <p>No hay datos de evolución</p>
-    }
+    const tipo = gen_data.tipos[0]?.toLowerCase();
+    const evolChainData = EvolutionData[gen_data.nombre.toLowerCase()]?.evolution_chain_data?.chain;
   
-    const evolData = EvolutionData[gen_data.nombre.toLowerCase()]?.evolution_chain_data?.chain;
+    if (!evolChainData) return null;
   
-    const evolutionElements = [];
+    const renderChain = (node, depth = 0) => {
+      const elements = [];
   
-    for (let i = 0; i < evolutionChain.length; i++) {
-      const poke = evolutionChain[i];
-      const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, poke);
+      // Render Pokémon actual
+      elements.push(renderPokemonBox(node.species.name, tipo, `${depth}-main`));
   
-      // Renderizar el Pokémon
-      evolutionElements.push(
-        <Box key={`poke-${i}`} style={{ backgroundColor: bgColors[gen_data.tipos[0]?.toLowerCase()] || '#ccc', padding: "10px", borderRadius: "10px", margin: "10px" }}>
-          <Box style={{ width: 100, height: 100, backgroundColor: midBgColors[gen_data.tipos[0].toLowerCase()], borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {numeroPokedex ? (
-              <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={poke} style={{ width: 120, height: 120 }} />
-            ) : (
-              <p>{poke}</p>
-            )}
+      // Render evoluciones
+      if (node.evolves_to.length > 0) {
+        // Muestra los métodos de evolución si están disponibles
+        const evolutionMethods = node.evolves_to.map((evo, i) => {
+          const detail = evo.evolution_details?.[0];
+          if (!detail) return null;
+  
+          const trigger = detail.trigger?.name;
+          const itemName = detail.item?.name;
+          const heldItemName = detail.held_item?.name;
+  
+          return (
+            <Box
+              key={`evol-${depth}-${i}`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                margin: "10px",
+                fontWeight: "bold",
+                color: "#fff",
+                padding: "10px",
+                borderRadius: "10px",
+              }}
+            >
+              {trigger === "level-up" && (
+                <div>
+                  {detail.min_happiness === 160
+                    ? "Level Up + Friendship Max"
+                    : `Level ${detail.min_level ?? "Up"}`}
+                </div>
+              )}
+  
+              {trigger === "use-item" && itemName && (
+                <>
+                  <div>Use {itemName.replace(/-/g, ' ')}</div>
+                </>
+              )}
+  
+              {trigger === "trade" && <div>Trade</div>}
+              {heldItemName && <div>Hold {heldItemName.replace(/-/g, ' ')}</div>}
+  
+              <KeyboardDoubleArrowDownIcon />
+            </Box>
+          );
+        });
+  
+        // Métodos de evolución (scroll horizontal)
+        elements.push(
+          <Box
+            key={`methods-${depth}`}
+            sx={{
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch", // para scroll suave en iOS
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "nowrap",
+                gap: 2,
+                px: 2, // padding horizontal para que no quede pegado
+                width: "max-content",
+              }}
+            >
+              {evolutionMethods}
+            </Box>
           </Box>
+        );
+  
+        // Render cada evolución lado a lado
+        const children = node.evolves_to.map((evo, i) =>
+          renderChain(evo, depth + 1 + i)
+        );
+  
+        // Evoluciones hijas (scroll horizontal)
+        elements.push(
+          <Box
+            key={`children-${depth}`}
+            sx={{
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "nowrap",
+                gap: 2,
+                px: 2,
+                width: "max-content",
+              }}
+            >
+              {children}
+            </Box>
+          </Box>
+        );
+      }
+  
+      return (
+        <Box key={`branch-${depth}`} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {elements}
         </Box>
       );
+    };
   
-      // Insertar método de evolución entre pares
-      if (i < evolutionChain.length - 1) {
-        let evolutionDetails;
-        if (i === 0) {
-          evolutionDetails = evolData?.evolves_to?.[0]?.evolution_details?.[0];
-        } else if (i === 1) {
-          evolutionDetails = evolData?.evolves_to?.[0]?.evolves_to?.[0]?.evolution_details?.[0];
-        }
-  
-        if (evolutionDetails) {
-          const trigger = evolutionDetails.trigger?.name;
-          const key = gen_data.tipos[0].toLowerCase();
-          const bg = typeColors[key] || '#aaa';
-          const textColor = isLightColor(bg) ? '#000' : '#fff';
-        
-          if (trigger === "level-up") {
-            evolutionElements.push(
-              <Box
-                key={`evol-${i}`}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                  margin: "5px 0",
-                  fontWeight: "bold",
-                  backgroundColor: bg,
-                  color: textColor,
-                  padding: "10px",
-                  borderRadius: "10px",
-                }}
-              >
-                <div>Level {evolutionDetails.min_level}</div>
-                <KeyboardDoubleArrowDownIcon style={{ color: textColor }} />
-              </Box>
-            );
-          } else if (trigger === "use-item" && evolutionDetails.item?.name) {
-            evolutionElements.push(
-              <Box
-                key={`item-evol-${i}`}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                  margin: "5px 0",
-                  fontWeight: "bold",
-                  backgroundColor: bg,
-                  color: textColor,
-                  padding: "10px",
-                  borderRadius: "10px",
-                }}
-              >
-                <div>Use {evolutionDetails.item.name.replace(/-/g, ' ')}</div>
-                { evolutionDetails.item?.name === 'thunder-stone' && (
-                  <img src={ThunderStone} alt="thunder" style={{ width: "40px" }} />
-                )}
-                <KeyboardDoubleArrowDownIcon style={{ color: textColor }} />
-              </Box>
-            );
-          }
-        }
-      }
-    }
-  
-    return evolutionElements;
+    return renderChain(evolChainData);
   };
 
   return (
