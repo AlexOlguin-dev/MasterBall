@@ -238,20 +238,43 @@ const PokedexDetail = () => {
   };
 
   const renderPokemonBox = (pokeName, tipo, i) => {
-    const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, pokeName);
-  
-    return (
-      <Box key={`poke-${i}-${pokeName}`} style={{
-        backgroundColor: bgColors[tipo] || '#ccc',
-        padding: "10px",
-        borderRadius: "10px",
-        margin: "5px",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        display: "flex",
-      }}>
+  const numeroPokedex = obtenerNumeroPokedexPorNombre(PokemonList, pokeName);
+
+  const handleClick = () => {
+    if (numeroPokedex) {
+      navigate(`/pokedex_detail/${numeroPokedex}`);
+      setActiveView('info')
+    }
+  };
+
+  return (
+    <>
+      {pokeName === "hydrapple" && (
+        <div style={{ fontSize: 12, fontWeight: "bold", color: "#fff", textAlign: "center" }}>
+          <span>Learn Dragon Cheer +</span>
+          <br/>
+          <span>Level up</span>
+          <br/>
+          <KeyboardDoubleArrowDownIcon />
+        </div>
+      )}
+      <Box
+        key={`poke-${i}-${pokeName}`}
+        onClick={handleClick}
+        style={{
+          backgroundColor: bgColors[tipo] || '#ccc',
+          padding: "10px",
+          borderRadius: "10px",
+          margin: "5px",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          display: "flex",
+          cursor: "pointer", // Para indicar que es clickeable
+          maxWidth: "70px"
+        }}
+      >
         <Box style={{
           width: 70, height: 70,
           backgroundColor: midBgColors[tipo],
@@ -261,28 +284,14 @@ const PokedexDetail = () => {
           {numeroPokedex ? (
             <img src={`/assets/img/official_art/${numeroPokedex}.png`} alt={pokeName} style={{ width: 90, height: 90 }} />
           ) : (
-            <p>{pokeName}</p>
+            <p style={{ fontSize: 12 }}>{pokeName}</p>
           )}
         </Box>
-        <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor(bgColors[tipo]) }}>{pokeName}</Typography>
-        <Box display="flex" gap={0.5}>
-          {obtenerTiposPorNombre(PokemonList,pokeName).map((tipo, i) => {
-            const key = tipo.toLowerCase();
-            const bg = typeColors[key] || '#aaa';
-            const textColor = isLightColor(bg) ? '#000' : '#fff';
-        
-            return (
-              <Box key={i} px={1} py={0.5} borderRadius={1} bgcolor={bg} style={{ width: "50px", textAlign: "center" }}>
-                <Typography fontSize={12} fontWeight="bold" color={textColor}>
-                  {tipo}
-                </Typography>
-              </Box>
-            );
-          })}
-        </Box>
+        <Typography style={{ marginTop: "8px", fontWeight: "bold", textAlign: "center", color: isLightColor(bgColors[tipo]), fontSize: 12 }}>{pokeName}</Typography>
       </Box>
-    );
-  };
+    </>
+  );
+};
   
   // Método principal para renderizar evoluciones
   const render_evolutions = () => {
@@ -322,12 +331,20 @@ const PokedexDetail = () => {
                 borderRadius: "10px",
                 textAlign: "center",
                 marginRight: detail.relative_physical_stats === 1 ? "-15px" : null,
-                marginLeft: detail.relative_physical_stats === 0 ? "-15px" : null
+                marginLeft: detail.relative_physical_stats === 0 ? "-15px" : null,
+                maxWidth: "70px"
               }}
             >
 
               {detail.gender === 1 && <div>Gender Female + </div>}
               {detail.gender === 2 && <div>Gender Male + </div>}
+              {detail.location != null && <div>At {detail.location}</div>}
+              {detail.known_move != null && <div>Learn {detail.known_move.name}</div>}
+              {trigger === 'use-20-times' && <div>Use 20 times</div>}
+              {trigger === "shed" && <div>Free space in team</div>}
+              {trigger === 'mega' && <div>Mega Evolution</div>}
+              {trigger === 'gmax' && <div>Gigantamax Form</div>}
+              {trigger === 'three-critical-hits' && <div>Three critical Hits</div>}
 
               {trigger === "level-up" && (
                 <div>
@@ -340,8 +357,6 @@ const PokedexDetail = () => {
                   {detail.party_type !== null && <div>{detail.party_type.name} Pokemon in Team + </div>}
                   {detail.known_move !== null && <div>{detail.known_move.name} + </div>}
                   {detail.time_of_day !== "" && <div>During {detail.time_of_day}</div>}
-                  {detail.gender === 1 && <div>Gender Female + </div>}
-                  {detail.gender === 2 && <div>Gender Male + </div>}
                   {detail.min_happiness === 160
                     ? "Level Up + Friendship Max"
                     : `Level ${detail.min_level ?? "Up"}`}

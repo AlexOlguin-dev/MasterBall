@@ -89,6 +89,14 @@ const Pokedex = ({ onLoadFinish }) => {
   const [searchName, setSearchName] = useState('');
 
   useEffect(() => {
+    const savedScroll = localStorage.getItem("scrollPosition");
+    if (savedScroll) {
+      window.scrollTo({ top: parseInt(savedScroll), behavior: "auto" });
+      localStorage.removeItem("scrollPosition"); // Limpia después de usar
+    }
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       onLoadFinish?.(); // finalizar carga cuando esté listo
     }, 10); // simula tiempo de carga
@@ -235,7 +243,10 @@ const Pokedex = ({ onLoadFinish }) => {
             mb={1}
             borderRadius={1}
             style={{ padding: "12px", cursor: 'pointer' }}
-            onClick={() => navigate(`/pokedex_detail/${pokemon.numero_pokedex}`)}
+            onClick={() => {
+              localStorage.setItem("scrollPosition", window.scrollY.toString());
+              navigate(`/pokedex_detail/${pokemon.numero_pokedex}`);
+            }}
           >
             <Box display="flex" flexDirection="column" flexGrow={1}>
               <Box display="flex" alignItems="center" mb={0.5}>
